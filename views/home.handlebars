@@ -1,5 +1,64 @@
 <h1 class="text-center mt-3">Vista Home</h1>
 
-{{#each customers}}
-    <p>{{this.customername}}</p>
-{{/each}}
+{{#if error}}
+
+    <h2 class="text-center">{{error}}</h2>
+
+{{else}}
+<section>
+    <h2 class="text-center py-2">Detalle de ordenes.</h2>
+
+    <section>
+        <h4>Filtros:</h4>
+        <form action="/home">
+        <div>
+            Estado: <select name="status">
+                {{#each estados}}
+                    <option value="{{status}}">{{status}}</option>
+                {{/each}}
+            </select>
+        </div>
+            <div>
+               Fecha pedido: <input type="text" name="orderdate" class="form-control"> 
+            </div>
+            <div>
+               Fecha entrega (estimada): <input type="text" name="requireddate" class="form-control"> 
+            </div>
+            <div>
+               Fecha de envío: <input type="text" name="shippeddate" class="form-control"> 
+            </div>           
+            
+            <div class="py-2">
+                <input type="submit" value="Filtrar" class="btn btn-primary">
+            </div>
+        </form>
+    </section>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">N° Orden</th>
+                <th scope="col">Fecha Pedido</th>
+                <th scope="col">Fecha Entrega</th>
+                <th scope="col">Fecha Despacho</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Detalle</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {{#each orders}}
+                <tr>
+                    <th scope="row">{{ordernumber}}</th>
+                    <td>{{orderdate}}</td>
+                    <td>{{requireddate}}</td>
+                    <td>{{shippeddate}}</td>
+                    <td>{{status}}</td>
+                    <td><button class="btn btn-primary">Detalles</button></td>
+                </tr>
+            {{/each}}
+    
+
+        </tbody>
+        </table>
+</section>
+{{/if }}
