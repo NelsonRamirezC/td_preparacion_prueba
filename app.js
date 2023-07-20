@@ -7,6 +7,7 @@ import * as path from "path";
 import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 import viewsRoutes from "./routes/views.routes.js";
+import ordersRoutes from "./routes/orders.routes.js";
 
 const app = express();
 
@@ -31,5 +32,6 @@ app.set("views", path.resolve(__dirname, "./views"));
 
 //VIEWS ROUTES
 app.use("/", viewsRoutes);
+app.use("/api/v1/orders", ordersRoutes);
 
 export default app;

@@ -1,0 +1,150 @@
+<h1 class="text-center mt-3">Vista Home 2</h1>
+
+<section>
+    <h2 class="text-center py-2">Detalle de ordenes.</h2>
+
+    <section>
+        <h4>Filtros:</h4>
+        <form id="formFilterOrders">
+            <div>
+                Estado:
+                <select name="status" class="filters">
+                    {{#each estados}}
+                        <option value="{{status}}">{{status}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <div>
+                Fecha pedido:
+                <input type="text" name="orderdate" class="form-control filters" />
+            </div>
+            <div>
+                Fecha entrega (estimada):
+                <input type="text" name="requireddate" class="form-control filters" />
+            </div>
+            <div>
+                Fecha de envío:
+                <input type="text" name="shippeddate" class="form-control filters" />
+            </div>
+
+            <div class="py-2">
+                <input type="submit" value="Filtrar" class="btn btn-primary" />
+            </div>
+        </form>
+    </section>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">N° Orden</th>
+                <th scope="col">Fecha Pedido</th>
+                <th scope="col">Fecha Entrega</th>
+                <th scope="col">Fecha Despacho</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Detalle</th>
+
+            </tr>
+        </thead>
+        <tbody id="tableBodyOrders">
+
+        </tbody>
+    </table>
+</section>
+
+<script>
+
+    let tableBodyOrders = document.getElementById("tableBodyOrders");
+    let formFilterOrders = document.getElementById("formFilterOrders");
+    const cargarDatos = (orders) => {
+
+        let rows = ""
+        orders.forEach(order => {
+            rows+= `
+                <tr>
+                    <th scope="row">${order.ordernumber}</th>
+                    <td>${order.orderdate}</td>
+                    <td>${order.requireddate}</td>
+                    <td>${order.shippeddate}</td>
+                    <td>${order.status}</td>
+                    <td><button class="btn btn-primary" dataset-id='${order.ordernumber}'>Detalles</button></td>
+                </tr>
+            `
+        })
+
+        tableBodyOrders.innerHTML = rows;
+    }
+
+    const getDataOrders = (data = {}) => {
+        return new Promise(async (resolve, reject) => {
+            try{
+                 let response = await fetch("/api/v1/orders/filter", {
+                    method: "POST",
+                    body: data
+                })
+
+                let result = await response.json();
+                resolve(result);
+
+            }catch(error){
+                reject();
+            }
+             
+        })
+
+    }
+
+    formFilterOrders.addEventListener("submit", async (event) => {
+        event.preventDefault(); 
+        try{
+
+            let data = new FormData(formFilterOrders);
+
+            let result = await getDataOrders(data);
+
+
+            if(result.code == 200){
+                cargarDatos(result.orders);
+            }else{
+                alert(result.message);
+            }
+        }catch(error){
+            console.log(error);
+        }
+    });
+
+    (main = async () => {
+        try{
+            let result = await getDataOrders();
+            if(result.code == 200){
+                cargarDatos(result.orders);
+            }else{
+                alert(result.message);
+            }
+        }catch(error){
+            console.log(error);
+            console.log("Error en carga de datos.")
+        }
+    })();
+
+
+    //eventos change
+
+    let filtersInputs = document.querySelectorAll(".filters");
+
+    filtersInputs.forEach(inputFilter => {
+        inputFilter.addEventListener("change", async (event) => {
+        event.preventDefault();
+        let data = new FormData(formFilterOrders);
+        try{
+            let result = await getDataOrders(data);
+            if(result.code == 200){
+                cargarDatos(result.orders);
+            }else{
+                alert(result.message);
+            }
+        }catch(error){
+            console.log(error);
+            console.log("Error en carga de datos.")
+        }
+    })
+    })
+</script>

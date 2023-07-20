@@ -2,9 +2,8 @@ import sequelize from "../database/database.js";
 import moment from "moment";
 import { Op } from "sequelize";
 
-const home = async (req, res) => {
-    //status
-    let parametros = req.query;
+const filterOrders = async (req, res) => {
+    let parametros = req.body;
 
     let filtros = {};
 
@@ -53,37 +52,21 @@ const home = async (req, res) => {
                 if (order.shippeddate.includes(parametros.shippeddate.trim())) {
                     return order;
                 }
-        });
+            });
 
         console.log(rows);
-        let estados = rows;
-        res.render("home", {
-            estados,
-            orders,
-        });
+        res.status(200).json({ code: 200, message: "ok", orders });
     } catch (error) {
         console.log(error);
-        res.render("home", {
-            error: "Ha ocurrido un error, intente más tarde.",
+        res.status(500).json({
+            code: 500,
+            message: "Error al procesar la solicitud.",
         });
     }
 };
 
-
-const home2 = async(req, res) => {
-    let [rows] = await sequelize.query(
-            "select distinct status from orders"
-    );
-    let estados = rows;
-    
-    res.render("home2", {
-        estados
-    });
-}
-
 let controllers = {
-    home,
-    home2,
+    filterOrders,
 };
 
 export default controllers;
